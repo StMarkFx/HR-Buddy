@@ -10,10 +10,23 @@ HR Buddy is an AI-powered application designed to streamline the job application
 * **User-Friendly Interface:**  A Streamlit-based interface provides an intuitive and easy-to-use experience.
 
 ## Project Structure
-```
-
-├── src/
-```
+    ```
+    hr-buddy/
+    ├── src/
+    │   └── hr_buddy/
+    │       ├── crew.py             # Main CrewAI code
+    │       ├── config/
+    │       │   ├── agents.yaml      # Agent configurations
+    │       │   └── tasks.yaml       # Task configurations
+    │       └── utils/              # Helper functions (optional)
+    │           └── ...
+    ├── tests/                       # Unit tests (optional)
+    │   └── ...
+    ├── .env                         # Environment variables
+    ├── .gitignore
+    ├── README.md
+    └── requirements.txt           # Project dependencies
+    ```
 
 
 ## Setup
