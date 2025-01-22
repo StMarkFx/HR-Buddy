@@ -10,7 +10,6 @@ HR Buddy is an AI-powered application designed to streamline the job application
 * **User-Friendly Interface:**  A Streamlit-based interface provides an intuitive and easy-to-use experience.
 
 ## Project Structure
-    ```
     hr-buddy/
     ├── src/
     │   └── hr_buddy/
@@ -26,7 +25,6 @@ HR Buddy is an AI-powered application designed to streamline the job application
     ├── .gitignore
     ├── README.md
     └── requirements.txt           # Project dependencies
-    ```
 
 
 ## Setup
