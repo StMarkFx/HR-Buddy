@@ -1,0 +1,43 @@
+researcher:
+  role: "Job Description Researcher"
+  goal: "Extract job title and requirements from the provided URL."
+  tools:
+    - name: "web_scraper" # Replace with your actual web scraping tool
+      type: "custom" # Or the appropriate type for your tool
+      config:
+        # Add any necessary configuration for your web scraping tool
+        url_template: "{job_url}"
+
+social_media_profiler:
+  role: "Social Media Profiler"
+  goal: "Gather and structure information from social media profiles."
+  tools:
+    - name: "social_media_scraper" # Replace with your actual social media scraping tool
+      type: "custom" # Or the appropriate type for your tool
+      config:
+        # Add any necessary configuration for your social media scraping tool
+        # e.g., API keys, usernames, etc.
+
+resume_strategist:
+  role: "Resume Strategist"
+  goal: "Tailor the resume to the specific job requirements."
+  tools:
+    - name: "llm"
+      type: "openai" # Or the appropriate type for your LLM
+      config:
+        api_key: "YOUR_LLM_API_KEY"
+        model: "text-davinci-003" # Or your preferred LLM model
+    - name: "resume_parser" # Replace with your actual resume parsing tool
+      type: "custom" # Or the appropriate type for your tool
+      config:
+        # Add any necessary configuration for your resume parsing tool
+
+interview_preparer:
+  role: "Interview Preparer"
+  goal: "Generate tailored interview questions based on the resume and job description."
+  tools:
+    - name: "llm"
+      type: "openai" # Or the appropriate type for your LLM
+      config:
+        api_key: "YOUR_LLM_API_KEY"
+        model: "text-davinci-003" # Or your preferred LLM model

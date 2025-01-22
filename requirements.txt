@@ -1,0 +1,7 @@
+crewai
+crewai-tools
+streamlit
+beautifulsoup4
+pyresparser
+# Add your vector database library here (e.g., faiss-cpu, chromadb)
+# Add any other necessary libraries

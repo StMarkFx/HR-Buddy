@@ -1,0 +1,6 @@
+web_scraping_task:
+  description: "Scrape data from a specific website."
+  expected_output: "A structured dataset extracted from the target website."
+  agent: web_scraper
+  tools:
+    - web_scraper_tool # Name of the tool as defined in agents.yaml
