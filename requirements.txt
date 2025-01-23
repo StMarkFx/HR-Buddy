@@ -1,7 +1,10 @@
 crewai
-crewai[tools]
+crewai_tools
 streamlit
 beautifulsoup4
 pyresparser
+requests
+reportlab
+
 # Add your vector database library here (e.g., faiss-cpu, chromadb)
 # Add any other necessary libraries

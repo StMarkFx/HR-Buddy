@@ -1,6 +1,9 @@
 from crewai import Agent, Crew, Process, Task
 from hr_buddy.utils.web_scraper import WebScraperTool # Replace with your actual tool class
 from hr_buddy.utils.resume_parser import ResumeParserTool # Replace with your actual tool class
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
 # ... other imports ...
 
 
@@ -31,17 +34,35 @@ class HRBuddyCrew(Crew):
 
     @Process
     def resume_generation(self, job_data, social_profile, resume_data):
-        # 4. Resume Generation
-        resume_strategist_agent = self.resume_strategist()
+        # ... existing code ...
         generated_resume = resume_strategist_agent.run(job_data=job_data, social_profile=social_profile, resume_data=resume_data)
-        return generated_resume
+        resume_pdf = self.create_resume_pdf(generated_resume) #New function call
+        return resume_pdf
 
     @Process
     def interview_preparation(self, job_data, resume_data):
-        # 5. Interview Preparation
-        interview_preparer_agent = self.interview_preparer()
+        # ... existing code ...
         interview_questions = interview_preparer_agent.run(job_data=job_data, resume_data=resume_data)
-        return interview_questions
+        interview_pdf = self.create_interview_pdf(interview_questions) #New function call
+        return interview_pdf
+
+    def create_resume_pdf(self, resume_data):
+        c = canvas.Canvas("resume.pdf", pagesize=letter)
+        c.drawString(1 * inch, 10 * inch, "Resume")
+        # Add resume content here using c.drawString, c.setFont, etc.
+        # ...  More sophisticated formatting would be needed here ...
+        c.save()
+        return "resume.pdf"
+
+    def create_interview_pdf(self, interview_questions):
+        c = canvas.Canvas("interview_questions.pdf", pagesize=letter)
+        c.drawString(1 * inch, 10 * inch, "Interview Questions")
+        y_position = 9 * inch
+        for question in interview_questions:
+            c.drawString(1 * inch, y_position, question)
+            y_position -= 0.5 * inch
+        c.save()
+        return "interview_questions.pdf"
 
     @agent
     def researcher(self) -> Agent:

@@ -1,5 +1,7 @@
 import streamlit as st
 from hr_buddy.crew import HRBuddyCrew  # Adjust import path as needed
+import os
+
 
 st.title("HR Buddy")
 
@@ -35,3 +37,9 @@ if st.button("Generate Resume & Prepare Interview"):
 
     except Exception as e:
         st.error(f"An error occurred: {e}")
+    finally:
+        #Clean up temporary files
+        if os.path.exists("resume.pdf"):
+            os.remove("resume.pdf")
+        if os.path.exists("interview_questions.pdf"):
+            os.remove("interview_questions.pdf")
