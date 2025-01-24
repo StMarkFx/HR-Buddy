@@ -4,3 +4,10 @@ web_scraping_task:
   agent: web_scraper
   tools:
     - web_scraper_tool # Name of the tool as defined in agents.yaml
+
+job_posting_analysis_task:
+  description: "Extract job title, description, requirements, and other relevant information from the provided job posting URL using the web scraper tool.  Ensure the output is a structured dictionary containing key-value pairs for easy access by subsequent agents."
+  expected_output: "A dictionary containing extracted job posting data (title, description, requirements, company, location, etc.).  Handle missing data gracefully, returning placeholders where necessary."
+  agent: researcher
+  context:
+    - job_url: "{job_url}" #This variable will be passed from the main application
