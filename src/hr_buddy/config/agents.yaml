@@ -1,43 +1,84 @@
 researcher:
   role: "Job Description Researcher"
-  goal: "Extract job title and requirements from the provided URL."
+  goal: "Extract job title, description, requirements, company, location, and other relevant information from the provided job posting URL.  The output should be a structured dictionary suitable for use by the Resume Strategist and Interview Preparer agents. Handle missing data gracefully, using placeholders where necessary."
   tools:
-    - name: "web_scraper" # Replace with your actual web scraping tool
+    - name: "web_scraper"
       type: "custom" # Or the appropriate type for your tool
       config:
-        # Add any necessary configuration for your web scraping tool
         url_template: "{job_url}"
+  communication:
+    output_format: "dictionary" #Specifies the format for communication with other agents
+    output_fields: ["title", "description", "requirements", "company", "location"] #List of key fields to be included in the output
 
 social_media_profiler:
   role: "Social Media Profiler"
-  goal: "Gather and structure information from social media profiles."
+  goal: "Gather and structure information from social media profiles (LinkedIn, GitHub, etc.).  The output should be a dictionary containing work experience, skills, education, and other relevant information.  Handle cases where a profile is unavailable or incomplete, using placeholders where appropriate.  The format should be consistent and easily integrable with the Resume Strategist agent."
   tools:
-    - name: "social_media_scraper" # Replace with your actual social media scraping tool
+    - name: "social_media_scraper"
       type: "custom" # Or the appropriate type for your tool
       config:
         # Add any necessary configuration for your social media scraping tool
         # e.g., API keys, usernames, etc.
+  communication:
+    output_format: "dictionary"
+    output_fields: ["work_experience", "skills", "education", "contact_info"]
 
-resume_strategist:
-  role: "Resume Strategist"
-  goal: "Tailor the resume to the specific job requirements."
+resume_parser:
+  role: "Resume Parser"
+  goal: "Parse the uploaded resume and extract key information such as work experience, skills, education, and contact details.  The output should be a structured format (e.g., a dictionary or list of dictionaries) suitable for integration with the Resume Strategist agent.  Handle various resume formats and potential inconsistencies in data."
   tools:
-    - name: "llm"
-      type: "openai" # Or the appropriate type for your LLM
-      config:
-        api_key: "YOUR_LLM_API_KEY"
-        model: "text-davinci-003" # Or your preferred LLM model
-    - name: "resume_parser" # Replace with your actual resume parsing tool
+    - name: "resume_parser_tool"
       type: "custom" # Or the appropriate type for your tool
       config:
         # Add any necessary configuration for your resume parsing tool
+  communication:
+    output_format: "dictionary"
+    output_fields: ["work_experience", "skills", "education", "contact_info"]
 
-interview_preparer:
-  role: "Interview Preparer"
-  goal: "Generate tailored interview questions based on the resume and job description."
+resume_strategist:
+  role: "Resume Strategist"
+  goal: "Generate a tailored resume based on the job posting data, social media profile data, and parsed resume data.  Use the LLM to craft compelling and concise descriptions of work experience and skills.  The final resume should be optimized for the target job posting and ATS compatibility.  The output should be a well-formatted resume text."
   tools:
     - name: "llm"
       type: "openai" # Or the appropriate type for your LLM
       config:
         api_key: "YOUR_LLM_API_KEY"
         model: "text-davinci-003" # Or your preferred LLM model
+  communication:
+    input_format: "dictionary" #Specifies the format for receiving input from other agents
+    input_fields: ["job_data", "social_profile", "resume_data"] #List of expected input fields
+    output_format: "text"
+
+interview_preparer:
+  role: "Interview Preparer"
+  goal: "Generate a list of targeted interview questions based on the job description and the candidate's resume.  The questions should be relevant, insightful, and help assess the candidate's suitability for the role.  Use the LLM to generate high-quality questions. The output should be a list of strings."
+  tools:
+    - name: "llm"
+      type: "openai" # Or the appropriate type for your LLM
+      config:
+        api_key: "YOUR_LLM_API_KEY"
+        model: "text-davinci-003" # Or your preferred LLM model
+  communication:
+    input_format: "dictionary"
+    input_fields: ["job_data", "resume_data"]
+    output_format: "list"
+
+resume_pdf_generator:
+  role: "Resume PDF Generator"
+  goal: "Convert the generated resume text into a well-formatted PDF document using the ReportLab library."
+  tools:
+    - name: "reportlab"
+      type: "library"
+  communication:
+    input_format: "text"
+    output_format: "file" #Indicates that the output is a file
+
+interview_questions_pdf_generator:
+  role: "Interview Questions PDF Generator"
+  goal: "Convert the generated interview questions into a well-formatted PDF document using the ReportLab library."
+  tools:
+    - name: "reportlab"
+      type: "library"
+  communication:
+    input_format: "list"
+    output_format: "file"
