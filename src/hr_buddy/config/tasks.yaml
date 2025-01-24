@@ -42,3 +42,13 @@ interview_preparation_task:
   context:
     - job_data: "{job_data}" #Output from job_posting_analysis_task
     - resume_data: "{resume_data}" #Output from resume_processing_task
+
+resume_pdf_generation_task:
+  description: "Convert the generated resume text into a PDF document using the ReportLab library.  Ensure the PDF is well-formatted and easy to read."
+  expected_output: "A PDF file containing the generated resume."
+  agent: resume_pdf_generator #This will require a new agent to be added to agents.yaml
+
+interview_questions_pdf_generation_task:
+  description: "Convert the generated interview questions into a PDF document using the ReportLab library.  Ensure the PDF is well-formatted and easy to read."
+  expected_output: "A PDF file containing the generated interview questions."
+  agent: interview_questions_pdf_generator #This will require a new agent to be added to agents.yaml
