@@ -6,6 +6,8 @@ beautifulsoup4
 pyresparser
 requests
 reportlab
+re
+jinja2
 
 # Add your vector database library here (e.g., faiss-cpu, chromadb)
 # Add any other necessary libraries
