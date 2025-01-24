@@ -11,3 +11,17 @@ job_posting_analysis_task:
   agent: researcher
   context:
     - job_url: "{job_url}" #This variable will be passed from the main application
+
+social_media_profile_task:
+  description: "Gather information from the specified social media profiles (LinkedIn, GitHub, etc.) using the social media scraper tool.  Structure the data in a consistent format for easy integration with the resume generation process.  Handle cases where a profile is unavailable or incomplete."
+  expected_output: "A dictionary containing structured data from social media profiles, including work experience, skills, education, and other relevant information.  Use placeholders for missing data."
+  agent: social_media_profiler
+  context:
+    - social_media_links: "{social_media_links}" #This variable will be passed from the main application
+
+resume_processing_task:
+  description: "Parse the uploaded resume using the resume parser tool.  Extract key information such as work experience, skills, education, and contact details.  The output should be a structured format suitable for integration with the resume strategist agent."
+  expected_output: "A structured representation of the resume data (e.g., a dictionary or list of dictionaries) containing extracted information.  Handle various resume formats and potential inconsistencies in data."
+  agent: resume_parser
+  context:
+    - resume_text: "{resume_text}" #This variable will be passed from the main application
