@@ -25,3 +25,20 @@ resume_processing_task:
   agent: resume_parser
   context:
     - resume_text: "{resume_text}" #This variable will be passed from the main application
+
+resume_generation_task:
+  description: "Generate a tailored resume based on the job posting data, social media profile data, and parsed resume data.  Use the LLM to craft compelling and concise descriptions of work experience and skills.  The final resume should be optimized for the target job posting and ATS compatibility."
+  expected_output: "A well-formatted resume text optimized for the target job posting.  The text should be clear, concise, and ATS-friendly.  Ensure the resume highlights the candidate's most relevant skills and experience."
+  agent: resume_strategist
+  context:
+    - job_data: "{job_data}" #Output from job_posting_analysis_task
+    - social_profile: "{social_profile}" #Output from social_media_profile_task
+    - resume_data: "{resume_data}" #Output from resume_processing_task
+
+interview_preparation_task:
+  description: "Generate a list of targeted interview questions based on the job description and the candidate's resume.  The questions should be relevant, insightful, and help assess the candidate's suitability for the role.  Use the LLM to generate high-quality questions."
+  expected_output: "A list of well-crafted interview questions tailored to the specific job and candidate profile.  The questions should be diverse, covering various aspects of the role and the candidate's experience."
+  agent: interview_preparer
+  context:
+    - job_data: "{job_data}" #Output from job_posting_analysis_task
+    - resume_data: "{resume_data}" #Output from resume_processing_task
