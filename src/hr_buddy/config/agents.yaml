@@ -82,3 +82,4 @@ interview_questions_pdf_generator:
   communication:
     input_format: "list"
     output_format: "file"
+ 
