@@ -1,14 +1,14 @@
 # HR Buddy: Your AI-Powered HR Assistant
 
-HR Buddy is an AI-powered application designed to streamline the job application process.  It leverages CrewAI to orchestrate multiple agents, each specializing in a specific task, to help users create compelling resumes and prepare for interviews.
+HR Buddy is an AI-powered application designed to streamline the job application process.  It leverages CrewAI to orchestrate multiple agents, each specializing in a specific task, to help users create craft outstanding resumes and prepare for interviews with precision.
 
 ## Features
 
 **Main Application:**
 
-* **Job Posting Input:** Enter a job posting URL to automatically extract key details like job title, description, and requirements.
+* **Job Posting Input:** Automatically extracts details like job title, description, and requirements from the job posting URL.
 * **Social Media Integration (Optional):** Connect your LinkedIn, GitHub, X (formerly Twitter), and Medium profiles to enrich your application.
-* **Resume Upload:** Upload your existing resume for analysis and refinement.  Missing information will be dynamically requested.
+* **Resume Upload:** Upload an existing resume for analysis and refinement. Missing information will be flagged and dynamically requested.
 * **Premium Resume Generation:** Receive a tailored, high-quality resume optimized for the target job posting.
 * **Profile/Resume Management:** Save completed profiles and resumes to your account for future use (requires account signup).
 * **Dynamic Information Collection:**  If critical information is missing from your uploaded resume, HR Buddy will prompt you to fill in the gaps using dynamic forms.
@@ -25,7 +25,7 @@ HR Buddy is an AI-powered application designed to streamline the job application
 ## User Workflow
 
 1. **Job Posting Input:** Provide the job URL.  The Researcher Agent extracts key information.
-2. **Social Media Integration (Optional):** Add links to your professional profiles. The Social Media Profiler Agent builds a detailed profile.
+2. **Social Media Integration (Optional):** Add links to your LinkedIn, GitHub, or other professional profiles for enhanced profile building.
 3. **Resume Upload:** Upload your resume.  Missing information is flagged, and you'll be prompted to complete it.
 4. **Resume Generation:** The Resume Strategist Agent creates a polished, job-specific resume.
 5. **Interview Preparation:** The Interview Preparer Agent generates tailored interview questions.
@@ -83,11 +83,11 @@ HR Buddy is an AI-powered application designed to streamline the job application
 1. Open the Streamlit app in your web browser.
 2. Enter the job URL and optionally provide your LinkedIn, GitHub profiles, and upload your resume.
 3. Click "Generate Resume & Prepare Interview".
-4. The app will display the generated resume and interview questions.
+4. View and download your tailored resume and interview preparation materials.
 
 ## Agents
 
-* **Researcher:** Extracts job title, requirements, and other relevant information from the job posting URL.
+* **Researcher:** Extracts job title, requirements, and other key information from the job posting URL.
 * **Resume Strategist:** Tailors the resume to match the job requirements, using the information gathered by the Researcher and the user-provided resume.
 * **Interview Preparer:** Generates interview questions based on the job description and resume.
 
