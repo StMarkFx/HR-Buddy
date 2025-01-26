@@ -1,0 +1,14 @@
+python-dotenv
+crewai
+crewai_tools
+streamlit
+beautifulsoup4
+pyresparser
+requests
+reportlab
+re
+jinja2
+langchain_community
+
+# Add your vector database library here (e.g., faiss-cpu, chromadb)
+# Add any other necessary libraries
