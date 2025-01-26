@@ -1,4 +1,5 @@
 from crewai import Agent, Crew, Process, Task
+from crewai.tools import WebScraperTool, PDFExtractorTool, SummarizerTool
 from hr_buddy.utils.web_scraper import WebScraperTool # Replace with your actual tool class
 from hr_buddy.utils.resume_parser import ResumeParserTool # Replace with your actual tool class
 from reportlab.pdfgen import canvas
