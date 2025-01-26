@@ -3,7 +3,6 @@ from hr_buddy.agents.researcher import ResearcherAgent
 from hr_buddy.agents.profiler import SocialMediaProfilerAgent
 from hr_buddy.agents.strategist import ResumeStrategistAgent
 from hr_buddy.agents.preparer import InterviewPreparerAgent
-from hr_buddy.utils.resume_generator import ResumeGeneratorTool
 
 class HRBuddyCrew:
     def __init__(self):
@@ -35,7 +34,7 @@ class HRBuddyCrew:
             interview_questions = self.preparer.generate_questions(job_details, resume_data)
 
             # Step 6: Generate interview questions PDF
-            interview_pdf_path = self._generate_interview_pdf(interview_questions, filename="interview_questions.pdf")
+            interview_pdf_path = self.preparer.generate_questions_pdf(interview_questions, filename="interview_questions.pdf")
 
             # Return the results
             return {
@@ -44,32 +43,6 @@ class HRBuddyCrew:
             }
         except Exception as e:
             raise Exception(f"An error occurred during crew execution: {e}")
-
-    def _generate_interview_pdf(self, questions, filename="interview_questions.pdf"):
-        """
-        Generate a PDF file for the interview questions.
-        """
-        try:
-            from reportlab.lib.pagesizes import letter
-            from reportlab.pdfgen import canvas
-
-            c = canvas.Canvas(filename, pagesize=letter)
-            y_position = 11 * inch
-
-            c.drawString(1 * inch, y_position, "Interview Questions:")
-            y_position -= 0.5 * inch
-
-            for question in questions:
-                if y_position <= 1 * inch:  # Prevent text from going outside the page
-                    c.showPage()
-                    y_position = 11 * inch
-                c.drawString(1 * inch, y_position, question)
-                y_position -= 0.25 * inch
-
-            c.save()
-            return filename
-        except Exception as e:
-            raise Exception(f"Failed to generate interview questions PDF: {e}")
 
 # Example usage
 if __name__ == "__main__":

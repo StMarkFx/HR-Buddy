@@ -36,41 +36,24 @@ HR Buddy is an AI-powered application designed to streamline the job application
 hr-buddy/
 ├── src/
 │   └── hr_buddy/
-│       ├── agents/               # Agent implementations
+│       ├── agents/
+│       │   ├── __init__.py
 │       │   ├── researcher.py
 │       │   ├── profiler.py
 │       │   ├── strategist.py
 │       │   └── preparer.py
-│       ├── tasks/                # Task definitions
-│       │   ├── research_task.py
-│       │   ├── profile_task.py
-│       │   ├── resume_task.py
-│       │   └── interview_task.py
-│       ├── utils/                # Utility functions
-│       │   └── ...
-│       ├── crew.py               # Main CrewAI orchestration
-│       └── config/               # Configuration files
-│           ├── agents.yaml
-│           └── tasks.yaml
-├── tests/                       # Unit tests
+│       ├── crew.py
+│       ├── utils/
+│       │   ├── __init__.py
+│       │   └── resume_generator.py
+│       └── config/
+│           └── agents.yaml
+├── tests/
 │   └── ...
-├── data/                        # Data storage
-│   ├── resumes/                 # Uploaded resumes
-│   └── profiles/                # User profiles
-├── scripts/                     # Utility scripts
-│   ├── setup_db.py              # Database setup script
-│   └── preprocess.py            # Data preprocessing script
-├── docs/                        # Documentation
-│   ├── architecture.md          # System architecture
-│   ├── user_guide.md            # User instructions
-│   └── api_reference.md         # API documentation
-├── logs/                        # Application logs
-│   └── app.log
-├── .env                         # Environment variables
+├── .env
 ├── .gitignore
 ├── README.md
-├── pyproject.toml               # Dependency management
-└── requirements.txt             # Fallback for dependencies
+└── requirements.txt
 
 ## Setup
 
@@ -116,7 +99,12 @@ hr-buddy/
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request.
+Contributions are welcome! If you'd like to contribute, please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bugfix.
+3. Commit your changes.
+4. Push your branch and submit a pull request.
 
 ## License
 
@@ -126,3 +114,9 @@ Contributions are welcome! Please open an issue or submit a pull request.
 ## Contact
 
 [Your contact information]
+
+## Acknowledgments
+
+CrewAI: For providing the multi-agent framework.
+OpenAI: For powering the LLM-based resume and interview question generation.
+ReportLab: For enabling PDF generation.

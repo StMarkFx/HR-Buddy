@@ -1,11 +1,11 @@
 from crewai import Agent
-from hr_buddy.utils.utils import ResumeGeneratorTool
+from hr_buddy.utils.resume_generator import ResumeGeneratorTool
 
 class ResumeStrategistAgent:
     def __init__(self):
         self.agent = Agent(
             role="Resume Strategist",
-            goal="Generate a tailored, ATS-optimized resume based on job details and user profile",
+            goal="Generate a tailored, ATS-optimized resume based on job details and user profile.",
             tools=["resume_parsing", "nlp", "template_engine"],
             verbose=True
         )
