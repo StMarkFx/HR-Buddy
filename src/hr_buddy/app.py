@@ -1,7 +1,7 @@
 import streamlit as st
-from hr_buddy.crew import run_crew  # Import CrewAI orchestration
+from hr_buddy.crew import HRBuddyCrew
 
-# Streamlit UI
+# Streamlit App
 def main():
     st.title("HR Buddy: AI-Powered HR Assistant")
 
@@ -17,17 +17,41 @@ def main():
 
     # Generate Button
     if st.button("Generate Resume & Prepare Interview"):
-        st.write("Processing...")
-        
-        # Call CrewAI backend
-        results = run_crew(job_url, linkedin_url, github_url, resume_file)
-        
-        # Display Results
-        st.write("Generated Resume:")
-        st.write(results["resume"])
-        
-        st.write("Interview Questions:")
-        st.write(results["interview_questions"])
+        if not job_url:
+            st.error("Please enter a job posting URL.")
+        else:
+            st.write("Processing...")
+
+            # Initialize the HRBuddyCrew
+            hr_buddy_crew = HRBuddyCrew()
+
+            # Run the crew
+            try:
+                results = hr_buddy_crew.run_crew(job_url, linkedin_url, github_url, resume_file)
+
+                # Display Results
+                st.success("Resume and interview questions generated successfully!")
+
+                # Download Links
+                st.write("### Download Your Tailored Resume")
+                with open(results["resume_pdf_path"], "rb") as file:
+                    st.download_button(
+                        label="Download Resume",
+                        data=file,
+                        file_name="tailored_resume.pdf",
+                        mime="application/pdf"
+                    )
+
+                st.write("### Download Interview Questions")
+                with open(results["interview_pdf_path"], "rb") as file:
+                    st.download_button(
+                        label="Download Interview Questions",
+                        data=file,
+                        file_name="interview_questions.pdf",
+                        mime="application/pdf"
+                    )
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     main()
