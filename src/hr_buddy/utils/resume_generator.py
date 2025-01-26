@@ -1,8 +1,9 @@
-from jinja2 import Template
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import inch
-from reportlab.pdfgen import canvas
+import os
 import re
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from jinja2 import Template
+from crewai.tools import BaseTool
 
 class ResumeGeneratorTool(BaseTool):
     name: str = "ResumeGenerator"
