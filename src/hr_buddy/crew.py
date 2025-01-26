@@ -1,101 +1,89 @@
-from crewai import Agent, Crew, Process, Task
-from crewai.tools import WebScraperTool, PDFExtractorTool, SummarizerTool
-from hr_buddy.utils.web_scraper import WebScraperTool # Replace with your actual tool class
-from hr_buddy.utils.resume_parser import ResumeParserTool # Replace with your actual tool class
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import inch
-# ... other imports ...
+from crewai import Crew, Task
+from hr_buddy.agents.researcher import ResearcherAgent
+from hr_buddy.agents.profiler import SocialMediaProfilerAgent
+from hr_buddy.agents.strategist import ResumeStrategistAgent
+from hr_buddy.agents.preparer import InterviewPreparerAgent
+from hr_buddy.utils.resume_generator import ResumeGeneratorTool
 
+class HRBuddyCrew:
+    def __init__(self):
+        # Initialize all agents
+        self.researcher = ResearcherAgent()
+        self.profiler = SocialMediaProfilerAgent()
+        self.strategist = ResumeStrategistAgent()
+        self.preparer = InterviewPreparerAgent()
 
-class HRBuddyCrew(Crew):
-    def __init__(self, agents_config):
-        super().__init__(agents_config)
+    def run_crew(self, job_url, linkedin_url=None, github_url=None, resume_file=None):
+        """
+        Orchestrate the multi-agent system to generate a tailored resume and interview questions.
+        """
+        try:
+            # Step 1: Extract job details using the Researcher Agent
+            job_details = self.researcher.extract_job_details(job_url)
 
-    @Process
-    def job_posting_analysis(self, job_url):
-        # 1. Job Posting Input
-        researcher_agent = self.researcher()
-        research_results = researcher_agent.run(job_url=job_url, tool=WebScraperTool())
-        return research_results
+            # Step 2: Gather social media profile data using the Profiler Agent
+            linkedin_data = self.profiler.fetch_linkedin_profile(linkedin_url) if linkedin_url else None
+            github_data = self.profiler.fetch_github_profile(github_url) if github_url else None
 
-    @Process
-    def social_media_profile(self, social_media_links):
-        # 2. Social Media Integration (Optional)
-        social_media_profiler_agent = self.social_media_profiler()
-        social_profile = social_media_profiler_agent.run(social_media_links=social_media_links, tool=WebScraperTool())
-        return social_profile
+            # Step 3: Parse the uploaded resume (if provided)
+            resume_data = self.strategist.agent.tools["resume_parsing"].parse_resume(resume_file) if resume_file else None
 
-    @Process
-    def resume_processing(self, resume_text):
-        # 3. Resume Upload and Processing
-        resume_parser = self.resume_parser()
-        parsed_resume = resume_parser.run(resume_text=resume_text, tool=ResumeParserTool())
-        return parsed_resume
+            # Step 4: Generate a tailored resume using the Strategist Agent
+            resume_pdf_path = self.strategist.generate_resume(job_details, resume_data, filename="tailored_resume.pdf")
 
-    @Process
-    def resume_generation(self, job_data, social_profile, resume_data):
-        # ... existing code ...
-        generated_resume = resume_strategist_agent.run(job_data=job_data, social_profile=social_profile, resume_data=resume_data)
-        resume_pdf = self.create_resume_pdf(generated_resume) #New function call
-        return resume_pdf
+            # Step 5: Generate interview questions using the Preparer Agent
+            interview_questions = self.preparer.generate_questions(job_details, resume_data)
 
-    @Process
-    def interview_preparation(self, job_data, resume_data):
-        # ... existing code ...
-        interview_questions = interview_preparer_agent.run(job_data=job_data, resume_data=resume_data)
-        interview_pdf = self.create_interview_pdf(interview_questions) #New function call
-        return interview_pdf
+            # Step 6: Generate interview questions PDF
+            interview_pdf_path = self._generate_interview_pdf(interview_questions, filename="interview_questions.pdf")
 
-    def create_resume_pdf(self, resume_data):
-        c = canvas.Canvas("resume.pdf", pagesize=letter)
-        c.drawString(1 * inch, 10 * inch, "Resume")
-        # Add resume content here using c.drawString, c.setFont, etc.
-        # ...  More sophisticated formatting would be needed here ...
-        c.save()
-        return "resume.pdf"
+            # Return the results
+            return {
+                "resume_pdf_path": resume_pdf_path,
+                "interview_pdf_path": interview_pdf_path
+            }
+        except Exception as e:
+            raise Exception(f"An error occurred during crew execution: {e}")
 
-    def create_interview_pdf(self, interview_questions):
-        c = canvas.Canvas("interview_questions.pdf", pagesize=letter)
-        c.drawString(1 * inch, 10 * inch, "Interview Questions")
-        y_position = 9 * inch
-        for question in interview_questions:
-            c.drawString(1 * inch, y_position, question)
+    def _generate_interview_pdf(self, questions, filename="interview_questions.pdf"):
+        """
+        Generate a PDF file for the interview questions.
+        """
+        try:
+            from reportlab.lib.pagesizes import letter
+            from reportlab.pdfgen import canvas
+
+            c = canvas.Canvas(filename, pagesize=letter)
+            y_position = 11 * inch
+
+            c.drawString(1 * inch, y_position, "Interview Questions:")
             y_position -= 0.5 * inch
-        c.save()
-        return "interview_questions.pdf"
 
-    @agent
-    def researcher(self) -> Agent:
-        return Agent(
-            config=self.agents_config['researcher'],
-            verbose=True
-        )
+            for question in questions:
+                if y_position <= 1 * inch:  # Prevent text from going outside the page
+                    c.showPage()
+                    y_position = 11 * inch
+                c.drawString(1 * inch, y_position, question)
+                y_position -= 0.25 * inch
 
-    @agent
-    def social_media_profiler(self) -> Agent:
-        return Agent(
-            config=self.agents_config['social_media_profiler'],
-            verbose=True
-        )
+            c.save()
+            return filename
+        except Exception as e:
+            raise Exception(f"Failed to generate interview questions PDF: {e}")
 
-    @agent
-    def resume_strategist(self) -> Agent:
-        return Agent(
-            config=self.agents_config['resume_strategist'],
-            verbose=True
-        )
+# Example usage
+if __name__ == "__main__":
+    # Initialize the crew
+    hr_buddy_crew = HRBuddyCrew()
 
-    @agent
-    def interview_preparer(self) -> Agent:
-        return Agent(
-            config=self.agents_config['interview_preparer'],
-            verbose=True
-        )
+    # Run the crew with sample inputs
+    results = hr_buddy_crew.run_crew(
+        job_url="https://example.com/job-posting",
+        linkedin_url="https://linkedin.com/in/username",
+        github_url="https://github.com/username",
+        resume_file="path/to/resume.pdf"
+    )
 
-    @agent
-    def resume_parser(self) -> Agent:
-        return Agent(
-            config=self.agents_config['resume_parser'],
-            verbose=True
-        )
+    # Display the results
+    print("Resume PDF Path:", results["resume_pdf_path"])
+    print("Interview Questions PDF Path:", results["interview_pdf_path"])
