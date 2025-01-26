@@ -32,22 +32,45 @@ HR Buddy is an AI-powered application designed to streamline the job application
 6. **Profile Saving (Optional):** Save your profile and generated resumes for future use (requires account signup).
 
 ## Project Structure
-    hr-buddy/
-    ├── src/
-    │   └── hr_buddy/
-    │       ├── crew.py             # Main CrewAI code
-    │       ├── config/
-    │       │   ├── agents.yaml      # Agent configurations
-    │       │   └── tasks.yaml       # Task configurations
-    │       └── utils/              # Helper functions (optional)
-    │           └── ...
-    ├── tests/                       # Unit tests (optional)
-    │   └── ...
-    ├── .env                         # Environment variables
-    ├── .gitignore
-    ├── README.md
-    └── requirements.txt           # Project dependencies
 
+hr-buddy/
+├── src/
+│   └── hr_buddy/
+│       ├── agents/               # Agent implementations
+│       │   ├── researcher.py
+│       │   ├── profiler.py
+│       │   ├── strategist.py
+│       │   └── preparer.py
+│       ├── tasks/                # Task definitions
+│       │   ├── research_task.py
+│       │   ├── profile_task.py
+│       │   ├── resume_task.py
+│       │   └── interview_task.py
+│       ├── utils/                # Utility functions
+│       │   └── ...
+│       ├── crew.py               # Main CrewAI orchestration
+│       └── config/               # Configuration files
+│           ├── agents.yaml
+│           └── tasks.yaml
+├── tests/                       # Unit tests
+│   └── ...
+├── data/                        # Data storage
+│   ├── resumes/                 # Uploaded resumes
+│   └── profiles/                # User profiles
+├── scripts/                     # Utility scripts
+│   ├── setup_db.py              # Database setup script
+│   └── preprocess.py            # Data preprocessing script
+├── docs/                        # Documentation
+│   ├── architecture.md          # System architecture
+│   ├── user_guide.md            # User instructions
+│   └── api_reference.md         # API documentation
+├── logs/                        # Application logs
+│   └── app.log
+├── .env                         # Environment variables
+├── .gitignore
+├── README.md
+├── pyproject.toml               # Dependency management
+└── requirements.txt             # Fallback for dependencies
 
 ## Setup
 

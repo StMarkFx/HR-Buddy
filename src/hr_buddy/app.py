@@ -1,45 +1,33 @@
 import streamlit as st
-from hr_buddy.crew import HRBuddyCrew  # Adjust import path as needed
-import os
+from hr_buddy.crew import run_crew  # Import CrewAI orchestration
 
+# Streamlit UI
+def main():
+    st.title("HR Buddy: AI-Powered HR Assistant")
 
-st.title("HR Buddy")
+    # Job Posting Input
+    job_url = st.text_input("Enter Job Posting URL")
 
-# Input fields for user data
-job_url = st.text_input("Job URL:")
-linkedin_url = st.text_input("LinkedIn Profile URL (Optional):")
-github_url = st.text_input("GitHub Profile URL (Optional):")
-resume = st.file_uploader("Upload Resume (Optional):", type=["pdf", "docx"])
+    # Social Media Integration
+    linkedin_url = st.text_input("Enter LinkedIn Profile URL (Optional)")
+    github_url = st.text_input("Enter GitHub Profile URL (Optional)")
 
-if st.button("Generate Resume & Prepare Interview"):
-    inputs = {
-        "job_url": job_url,
-        "linkedin_url": linkedin_url,
-        "github_url": github_url,
-        "resume": resume,  # Handle resume upload appropriately
-    }
+    # Resume Upload
+    resume_file = st.file_uploader("Upload Your Resume (PDF or DOCX)", type=["pdf", "docx"])
 
-    try:
-        crew = HRBuddyCrew()
-        results = crew.run(inputs)
+    # Generate Button
+    if st.button("Generate Resume & Prepare Interview"):
+        st.write("Processing...")
+        
+        # Call CrewAI backend
+        results = run_crew(job_url, linkedin_url, github_url, resume_file)
+        
+        # Display Results
+        st.write("Generated Resume:")
+        st.write(results["resume"])
+        
+        st.write("Interview Questions:")
+        st.write(results["interview_questions"])
 
-        # Display results (customize this section based on your agent outputs)
-        st.subheader("Generated Resume:")
-        st.text(results.get("resume", "Resume generation failed.")) # Access resume from results
-
-        st.subheader("Interview Questions:")
-        interview_questions = results.get("interview_questions", [])
-        if interview_questions:
-            for question in interview_questions:
-                st.write(f"- {question}")
-        else:
-            st.write("Interview question generation failed.")
-
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-    finally:
-        #Clean up temporary files
-        if os.path.exists("resume.pdf"):
-            os.remove("resume.pdf")
-        if os.path.exists("interview_questions.pdf"):
-            os.remove("interview_questions.pdf")
+if __name__ == "__main__":
+    main()
