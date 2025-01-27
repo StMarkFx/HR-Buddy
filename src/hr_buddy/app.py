@@ -1,5 +1,5 @@
 import streamlit as st
-from hr_buddy.crew import HRBuddyCrew
+#from crew import HRBuddyCrew
 
 # Streamlit App
 def main():
@@ -23,11 +23,11 @@ def main():
             st.write("Processing...")
 
             # Initialize the HRBuddyCrew
-            hr_buddy_crew = HRBuddyCrew()
+            #hr_buddy_crew = HRBuddyCrew()
 
             # Run the crew
             try:
-                results = hr_buddy_crew.run_crew(job_url, linkedin_url, github_url, resume_file)
+                #results = hr_buddy_crew.run_crew(job_url, linkedin_url, github_url, resume_file)
 
                 # Display Results
                 st.success("Resume and interview questions generated successfully!")

@@ -1,4 +1,8 @@
 from crewai import Crew, Task
+import sys
+from pathlib import Path
+# Add the src/ directory to sys.path
+sys.path.append(str(Path(__file__).parent.parent))
 from hr_buddy.agents.researcher import ResearcherAgent
 from hr_buddy.agents.profiler import SocialMediaProfilerAgent
 from hr_buddy.agents.strategist import ResumeStrategistAgent
