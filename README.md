@@ -59,7 +59,7 @@ hr-buddy/
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository_url>
+   git clone 
    ```
 
 2. **Create a virtual environment:**
@@ -113,7 +113,11 @@ Contributions are welcome! If you'd like to contribute, please follow these step
 
 ## Contact
 
-[Your contact information]
+For questions or feedback, please contact:
+
+ - **Your Name:** stmarkadebayo@gmail.com
+ - **LinkedIn:** St. Mark Adebayo[https://www.linkedin.com/in/stmarkadebayo]
+ - **GitHub:** github.com/StMarkFx
 
 ## Acknowledgments
 
