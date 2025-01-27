@@ -33,6 +33,7 @@ HR Buddy is an AI-powered application designed to streamline the job application
 
 ## Project Structure
 
+```
 hr-buddy/
 ├── src/
 │   └── hr_buddy/
@@ -54,6 +55,7 @@ hr-buddy/
 ├── .gitignore
 ├── README.md
 └── requirements.txt
+```
 
 ## Setup
 
