@@ -118,8 +118,8 @@ Contributions are welcome! If you'd like to contribute, please follow these step
 For questions or feedback, please contact:
 
  - **Your Name:** stmarkadebayo@gmail.com
- - **LinkedIn:** St. Mark Adebayo[https://www.linkedin.com/in/stmarkadebayo]
- - **GitHub:** github.com/StMarkFx
+ - **LinkedIn:** St. Mark Adebayo [https://www.linkedin.com/in/stmarkadebayo]
+ - **GitHub:** https://www.github.com/StMarkFx
 
 ## Acknowledgments
 

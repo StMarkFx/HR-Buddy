@@ -15,6 +15,30 @@ def main():
     # Resume Upload
     resume_file = st.file_uploader("Upload Your Resume (PDF or DOCX)", type=["pdf", "docx"])
 
+    # Dynamic Form Handling for Missing Resume Information
+    missing_info = {}  # Store missing information from resume parsing
+    if resume_data and missing_info:
+        st.subheader("Please complete the following information:")
+        for field, value in missing_info.items():
+            if field == "skills":
+                missing_info[field] = st.text_input(f"Enter your {field} (comma-separated):", value)
+            elif field == "work_experience":
+                # Add more complex form for work experience
+                missing_info[field] = []
+                num_experiences = st.number_input("Number of work experiences to add:", min_value=0)
+                for i in range(num_experiences):
+                    experience = {}
+                    experience["title"] = st.text_input(f"Experience {i+1} - Title:")
+                    experience["company"] = st.text_input(f"Experience {i+1} - Company:")
+                    experience["start_date"] = st.date_input(f"Experience {i+1} - Start Date:")
+                    experience["end_date"] = st.date_input(f"Experience {i+1} - End Date:")
+                    experience["description"] = st.text_area(f"Experience {i+1} - Description:")
+                    missing_info[field].append(experience)
+            else:
+                missing_info[field] = st.text_input(f"Enter your {field}:", value)
+
+
+
     # Generate Button
     if st.button("Generate Resume & Prepare Interview"):
         if not job_url:

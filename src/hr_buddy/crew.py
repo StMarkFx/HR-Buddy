@@ -29,7 +29,9 @@ class HRBuddyCrew:
             github_data = self.profiler.fetch_github_profile(github_url) if github_url else None
 
             # Step 3: Parse the uploaded resume (if provided)
-            resume_data = self.strategist.agent.tools["resume_parsing"].parse_resume(resume_file) if resume_file else None
+            resume_data = self.strategist.agent.tools["resume_parsing"].parse_resume(resume_file) if resume_file else {}
+            if missing_info:
+                resume_data.update(missing_info) # Update resume_data with missing information
 
             # Step 4: Generate a tailored resume using the Strategist Agent
             resume_pdf_path = self.strategist.generate_resume(job_details, resume_data, filename="tailored_resume.pdf")
