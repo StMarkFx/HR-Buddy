@@ -1,55 +1,103 @@
-researcher:
-  role: "Job Description Researcher"
-  goal: "Extract job title, description, requirements, company, location, and other relevant information from the provided job posting URL."
-  tools:
-    - name: "web_scraper"
-      type: "custom"
-      config:
-        url_template: "{job_url}"
-  communication:
-    output_format: "dictionary"
-    output_fields: ["title", "description", "requirements", "company", "location"]
+# HR Buddy Agents Configuration
+agents:
+  researcher:
+    role: "Job Description Researcher"
+    goal: "Extract job title, description, requirements, company, location, and other relevant information from the provided job posting URL."
+    tools:
+      - name: "web_scraper"
+        type: "custom"
+        config:
+          url_template: "{job_url}"  # Template for dynamically inserting the job URL
+          timeout: 10  # Timeout in seconds for the web scraper
+          retries: 3   # Number of retries if the scraping fails
+    communication:
+      output_format: "dictionary"
+      output_fields:
+        - "title"
+        - "description"
+        - "requirements"
+        - "company"
+        - "location"
+        - "posted_date"  # Additional field for the job posting date
+      error_handling:
+        retry_on_failure: true
+        fallback_value: "N/A"  # Default value if a field cannot be extracted
 
-social_media_profiler:
-  role: "Social Media Profiler"
-  goal: "Gather and structure information from social media profiles (LinkedIn, GitHub, etc.)."
-  tools:
-    - name: "social_media_scraper"
-      type: "custom"
-      config:
-        # Add any necessary configuration for your social media scraping tool
-  communication:
-    output_format: "dictionary"
-    output_fields: ["work_experience", "skills", "education", "contact_info"]
+  social_media_profiler:
+    role: "Social Media Profiler"
+    goal: "Gather and structure information from social media profiles (LinkedIn, GitHub, etc.)."
+    tools:
+      - name: "social_media_scraper"
+        type: "custom"
+        config:
+          api_endpoint: "https://api.socialmedia.com/v1/profile"  # Example API endpoint
+          api_key: "YOUR_SOCIAL_MEDIA_API_KEY"  # API key for authentication
+          rate_limit: 100  # Maximum requests per minute
+    communication:
+      output_format: "dictionary"
+      output_fields:
+        - "work_experience"
+        - "skills"
+        - "education"
+        - "contact_info"
+        - "projects"  # Additional field for GitHub projects
+      error_handling:
+        retry_on_failure: true
+        fallback_value: "N/A"  # Default value if a field cannot be extracted
 
-resume_strategist:
-  role: "Resume Strategist"
-  goal: "Generate a tailored resume based on the job posting data, social media profile data, and parsed resume data."
-  tools:
-    - name: "llm"
-      type: "openai"
-      config:
-        api_key: "YOUR_LLM_API_KEY"
-        model: "text-davinci-003"
-    - name: "resume_generator"
-      type: "custom"
-      config:
-        # Configuration for ResumeGeneratorTool
-  communication:
-    input_format: "dictionary"
-    input_fields: ["job_data", "social_profile", "resume_data"]
-    output_format: "file"  # Output is a PDF file
+  resume_strategist:
+    role: "Resume Strategist"
+    goal: "Generate a tailored resume based on the job posting data, social media profile data, and parsed resume data."
+    tools:
+      - name: "llm"
+        type: "openai"
+        config:
+          api_key: "YOUR_LLM_API_KEY"
+          model: "text-davinci-003"
+          temperature: 0.7  # Controls creativity of the LLM
+          max_tokens: 1000  # Maximum tokens for the output
+      - name: "resume_generator"
+        type: "custom"
+        config:
+          template_path: "templates/resume_template.docx"  # Path to the resume template
+          output_format: "pdf"  # Output format for the generated resume
+    communication:
+      input_format: "dictionary"
+      input_fields:
+        - "job_data"
+        - "social_profile"
+        - "resume_data"
+      output_format: "file"  # Output is a PDF file
+      error_handling:
+        retry_on_failure: true
+        fallback_action: "log_and_continue"  # Log the error and continue execution
 
-interview_preparer:
-  role: "Interview Preparer"
-  goal: "Generate a list of targeted interview questions based on the job description and the candidate's resume."
-  tools:
-    - name: "llm"
-      type: "openai"
-      config:
-        api_key: "YOUR_LLM_API_KEY"
-        model: "text-davinci-003"
-  communication:
-    input_format: "dictionary"
-    input_fields: ["job_data", "resume_data"]
-    output_format: "file"  # Output is a PDF file
+  interview_preparer:
+    role: "Interview Preparer"
+    goal: "Generate a list of targeted interview questions based on the job description and the candidate's resume."
+    tools:
+      - name: "llm"
+        type: "openai"
+        config:
+          api_key: "YOUR_LLM_API_KEY"
+          model: "text-davinci-003"
+          temperature: 0.5  # Lower temperature for more focused questions
+          max_tokens: 500   # Maximum tokens for the output
+    communication:
+      input_format: "dictionary"
+      input_fields:
+        - "job_data"
+        - "resume_data"
+      output_format: "file"  # Output is a PDF file
+      error_handling:
+        retry_on_failure: true
+        fallback_action: "log_and_continue"  # Log the error and continue execution
+
+# Global Configuration
+global_config:
+  logging:
+    level: "INFO"  # Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    file_path: "logs/hr_buddy.log"  # Path to the log file
+  error_handling:
+    max_retries: 3  # Maximum number of retries for failed operations
+    retry_delay: 5  # Delay in seconds between retries
