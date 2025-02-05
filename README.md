@@ -44,6 +44,7 @@ hr-buddy/
 │       │   ├── strategist.py
 │       │   └── preparer.py
 │       ├── crew.py
+│       ├── app.py
 │       ├── utils/
 │       │   ├── __init__.py
 │       │   └── resume_generator.py
@@ -117,8 +118,8 @@ Contributions are welcome! If you'd like to contribute, please follow these step
 
 For questions or feedback, please contact:
 
- - **Your Name:** stmarkadebayo@gmail.com
  - **LinkedIn:** St. Mark Adebayo [https://www.linkedin.com/in/stmarkadebayo]
+ - **Email:** stmarkadebayo@gmail.com
  - **GitHub:** https://www.github.com/StMarkFx
 
 ## Acknowledgments
