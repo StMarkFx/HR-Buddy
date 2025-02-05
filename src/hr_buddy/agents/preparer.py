@@ -14,10 +14,10 @@ class InterviewPreparerAgent:
 
     def generate_questions(self, job_details, resume_data):
         """
-        Generate a list of targeted interview questions.
+        Generate a list of targeted interview questions based on job description and resume.
         """
         try:
-            # Extract keywords from job description and resume
+            # Extract keywords from job description and resume skills
             keywords = set(job_details["requirements"].split() + resume_data["skills"])
 
             # Generate questions based on keywords
@@ -64,6 +64,10 @@ if __name__ == "__main__":
     preparer = InterviewPreparerAgent()
     job_details = {"requirements": "Python, Machine Learning, Data Analysis"}
     resume_data = {"skills": ["Python", "Data Analysis"]}
-    questions = preparer.generate_questions(job_details, resume_data)
-    pdf_path = preparer.generate_questions_pdf(questions)
-    print(f"Interview questions PDF generated at: {pdf_path}")
+    
+    try:
+        questions = preparer.generate_questions(job_details, resume_data)
+        pdf_path = preparer.generate_questions_pdf(questions)
+        print(f"Interview questions PDF generated at: {pdf_path}")
+    except Exception as e:
+        print(f"Error: {e}")

@@ -5,7 +5,7 @@ class SocialMediaProfilerAgent:
     def __init__(self):
         self.agent = Agent(
             role="Social Media Profiler",
-            goal="Gather professional information from linked social media profiles",
+            goal="Gather professional information from LinkedIn and GitHub profiles",
             tools=["social_media_api"],
             verbose=True
         )
@@ -15,8 +15,10 @@ class SocialMediaProfilerAgent:
         Fetch LinkedIn profile data using the LinkedIn API.
         """
         try:
-            # Replace with actual LinkedIn API call
-            response = requests.get(linkedin_url)
+            # Example LinkedIn API endpoint (replace with actual API logic)
+            linkedin_api_url = f"https://api.linkedin.com/v2/me?url={linkedin_url}"
+            headers = {"Authorization": "Bearer YOUR_ACCESS_TOKEN"}  # Add proper authentication
+            response = requests.get(linkedin_api_url, headers=headers)
             response.raise_for_status()
             return response.json()  # Assuming the API returns JSON
         except Exception as e:
@@ -27,8 +29,9 @@ class SocialMediaProfilerAgent:
         Fetch GitHub profile data using the GitHub API.
         """
         try:
-            # Replace with actual GitHub API call
-            response = requests.get(github_url)
+            # GitHub API URL format (replace with actual API logic)
+            github_api_url = f"https://api.github.com/users/{github_url.split('/')[-1]}"
+            response = requests.get(github_api_url)
             response.raise_for_status()
             return response.json()  # Assuming the API returns JSON
         except Exception as e:
@@ -37,6 +40,13 @@ class SocialMediaProfilerAgent:
 # Example usage
 if __name__ == "__main__":
     profiler = SocialMediaProfilerAgent()
-    linkedin_data = profiler.fetch_linkedin_profile("https://linkedin.com/in/username")
-    github_data = profiler.fetch_github_profile("https://github.com/username")
-    print(linkedin_data, github_data)
+    linkedin_url = "https://linkedin.com/in/username"
+    github_url = "https://github.com/username"
+    
+    try:
+        linkedin_data = profiler.fetch_linkedin_profile(linkedin_url)
+        github_data = profiler.fetch_github_profile(github_url)
+        print("LinkedIn Profile Data:", linkedin_data)
+        print("GitHub Profile Data:", github_data)
+    except Exception as e:
+        print(f"Error: {e}")
