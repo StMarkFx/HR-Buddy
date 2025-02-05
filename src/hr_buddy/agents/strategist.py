@@ -1,5 +1,7 @@
 from crewai import Agent
 from hr_buddy.utils.resume_generator import ResumeGeneratorTool
+import subprocess
+import json
 
 class ResumeStrategistAgent:
     def __init__(self):
@@ -19,7 +21,24 @@ class ResumeStrategistAgent:
             # Prepare data for resume generation
             resume_data["job_description"] = job_details.get("description", "")
 
-            # Generate the resume PDF
+            # Use DeepSeek model via ollama for processing and providing tailored suggestions if necessary
+            # You can pass resume data and job details to the model for additional optimization.
+            deepseek_input = {
+                "job_description": job_details.get("description", ""),
+                "resume_data": resume_data
+            }
+
+            # Call DeepSeek via subprocess
+            result = subprocess.run(
+                ["ollama", "run", "deepseek-r1:1.5b"],
+                input=json.dumps(deepseek_input), text=True, capture_output=True
+            )
+
+            # Process the model's response
+            model_output = result.stdout
+            print("DeepSeek output:", model_output)
+
+            # Generate the resume PDF using the original resume generator logic
             pdf_path = self.resume_generator._run(
                 data=resume_data,
                 job_description=job_details.get("description", ""),

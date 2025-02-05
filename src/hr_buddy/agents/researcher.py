@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 import requests
 from crewai import Agent
+import subprocess
+import json
 
 class ResearcherAgent:
     def __init__(self):
@@ -13,7 +15,7 @@ class ResearcherAgent:
 
     def extract_job_details(self, job_url):
         """
-        Extract job details from the given job posting URL.
+        Extract job details from the given job posting URL and process it using DeepSeek.
         """
         try:
             # Fetch the job posting page
@@ -28,11 +30,31 @@ class ResearcherAgent:
             description = soup.find("div", class_="job-description").text.strip()
             requirements = soup.find("div", class_="job-requirements").text.strip()
 
-            return {
+            # Use DeepSeek to refine the job description if needed (or for additional NLP tasks)
+            deepseek_input = {
                 "title": title,
                 "description": description,
                 "requirements": requirements
             }
+
+            # Call DeepSeek via subprocess
+            result = subprocess.run(
+                ["ollama", "run", "deepseek-r1:1.5b"],
+                input=json.dumps(deepseek_input), text=True, capture_output=True
+            )
+
+            # Process the model's response
+            model_output = result.stdout
+            print("DeepSeek output:", model_output)
+
+            # Return the extracted job details
+            return {
+                "title": title,
+                "description": description,
+                "requirements": requirements,
+                "processed_details": model_output  # You can process the model's output as needed
+            }
+
         except Exception as e:
             raise Exception(f"Failed to extract job details: {e}")
 
