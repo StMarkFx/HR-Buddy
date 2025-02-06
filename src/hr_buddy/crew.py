@@ -1,10 +1,10 @@
 import sys
+import traceback
 from pathlib import Path
 import logging
 from typing import Optional, Dict, Any
 from crewai import Crew, Task
 
-# Add the src/ directory to sys.path
 sys.path.append(str(Path(__file__).parent.parent))
 
 # Import agents
@@ -20,99 +20,98 @@ logger = logging.getLogger(__name__)
 
 class HRBuddyCrew:
     def __init__(self):
+        """Initialize HR Buddy Crew class (lazy agent instantiation)."""
+        pass  # Instantiate agents only when needed
+
+    def extract_job_details(self, job_url: str) -> Dict[str, Any]:
+        """Extract job details using the ResearcherAgent."""
+        try:
+            researcher = ResearcherAgent()
+            job_details = researcher.extract_job_details(job_url)
+            if not job_details:
+                raise ValueError("Job details extraction failed.")
+            return job_details
+        except Exception as e:
+            logger.error(f"Error extracting job details: {e}")
+            logger.debug(traceback.format_exc())
+            raise
+
+    def fetch_social_profiles(self, linkedin_url: Optional[str], github_url: Optional[str]) -> Dict[str, Any]:
+        """Fetch LinkedIn and GitHub profile data."""
+        profiler = SocialMediaProfilerAgent()
+        return {
+            "linkedin": profiler.fetch_linkedin_profile(linkedin_url) if linkedin_url else None,
+            "github": profiler.fetch_github_profile(github_url) if github_url else None
+        }
+
+    def parse_resume(self, resume_file: str, missing_info: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+        """Parse and update resume data."""
+        try:
+            strategist = ResumeStrategistAgent()
+            resume_data = strategist.agent.tools["resume_parsing"].parse_resume(resume_file)
+
+            # Ensure missing_info is merged correctly
+            if missing_info:
+                for key, value in missing_info.items():
+                    if key not in resume_data or not resume_data[key]:  # Fill only missing fields
+                        resume_data[key] = value
+
+            return resume_data
+        except Exception as e:
+            logger.error(f"Error parsing resume: {e}")
+            logger.debug(traceback.format_exc())
+            raise
+
+    def generate_resume(self, job_details: Dict[str, Any], resume_data: Dict[str, Any]) -> str:
+        """Generate a tailored resume."""
+        strategist = ResumeStrategistAgent()
+        resume_pdf_path = strategist.generate_resume(job_details, resume_data, filename="tailored_resume.pdf")
+        return resume_pdf_path
+
+    def generate_interview_questions(self, job_details: Dict[str, Any], resume_data: Dict[str, Any]) -> str:
+        """Generate interview questions and save as a PDF."""
+        preparer = InterviewPreparerAgent()
+        interview_questions = preparer.generate_questions(job_details, resume_data)
+        interview_pdf_path = preparer.generate_questions_pdf(interview_questions, filename="interview_questions.pdf")
+        return interview_pdf_path
+
+    def run_crew(self, job_url: str, linkedin_url: Optional[str] = None, github_url: Optional[str] = None,
+                 resume_file: Optional[str] = None, missing_info: Optional[Dict[str, Any]] = None) -> Dict[str, str]:
         """
-        Initialize all agents required for the HR Buddy crew.
-        """
-        self.researcher = ResearcherAgent()
-        self.profiler = SocialMediaProfilerAgent()
-        self.strategist = ResumeStrategistAgent()
-        self.preparer = InterviewPreparerAgent()
-
-    def run_crew(
-        self,
-        job_url: str,
-        linkedin_url: Optional[str] = None,
-        github_url: Optional[str] = None,
-        resume_file: Optional[str] = None,
-        missing_info: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, str]:
-        """
-        Orchestrate the multi-agent system to generate a tailored resume and interview questions.
-
-        Args:
-            job_url (str): URL of the job posting.
-            linkedin_url (Optional[str]): LinkedIn profile URL (optional).
-            github_url (Optional[str]): GitHub profile URL (optional).
-            resume_file (Optional[str]): Path to the uploaded resume file (optional).
-            missing_info (Optional[Dict[str, Any]]): Missing information to update in the resume data.
-
-        Returns:
-            Dict[str, str]: Paths to the generated resume and interview questions PDFs.
-
-        Raises:
-            Exception: If any step in the process fails.
+        Orchestrate the multi-agent process to generate a tailored resume and interview questions.
         """
         try:
-            logger.info("Starting HR Buddy Crew execution...")
+            logger.info("🔍 Extracting job details...")
+            job_details = self.extract_job_details(job_url)
 
-            # Step 1: Extract job details using the Researcher Agent
-            logger.info("Extracting job details...")
-            job_details = self.researcher.extract_job_details(job_url)
-            if not job_details:
-                raise ValueError("Failed to extract job details from the provided URL.")
+            logger.info("📢 Fetching social media profiles...")
+            social_profiles = self.fetch_social_profiles(linkedin_url, github_url)
 
-            # Step 2: Gather social media profile data using the Profiler Agent
-            logger.info("Fetching social media profiles...")
-            linkedin_data = (
-                self.profiler.fetch_linkedin_profile(linkedin_url) if linkedin_url else None
-            )
-            github_data = (
-                self.profiler.fetch_github_profile(github_url) if github_url else None
-            )
-
-            # Step 3: Parse the uploaded resume (if provided)
             resume_data = {}
             if resume_file:
-                logger.info("Parsing resume...")
-                resume_data = self.strategist.agent.tools["resume_parsing"].parse_resume(resume_file)
-                if missing_info:
-                    logger.info("Updating resume data with missing information...")
-                    resume_data.update(missing_info)
+                logger.info("📄 Parsing resume...")
+                resume_data = self.parse_resume(resume_file, missing_info)
 
-            # Step 4: Generate a tailored resume using the Strategist Agent
-            logger.info("Generating tailored resume...")
-            resume_pdf_path = self.strategist.generate_resume(
-                job_details, resume_data, filename="tailored_resume.pdf"
-            )
+            logger.info("✍️ Generating tailored resume...")
+            resume_pdf_path = self.generate_resume(job_details, resume_data)
 
-            # Step 5: Generate interview questions using the Preparer Agent
-            logger.info("Generating interview questions...")
-            interview_questions = self.preparer.generate_questions(job_details, resume_data)
+            logger.info("🎤 Generating interview questions...")
+            interview_pdf_path = self.generate_interview_questions(job_details, resume_data)
 
-            # Step 6: Generate interview questions PDF
-            logger.info("Creating interview questions PDF...")
-            interview_pdf_path = self.preparer.generate_questions_pdf(
-                interview_questions, filename="interview_questions.pdf"
-            )
-
-            logger.info("HR Buddy Crew execution completed successfully.")
-            return {
-                "resume_pdf_path": resume_pdf_path,
-                "interview_pdf_path": interview_pdf_path,
-            }
+            logger.info("✅ HR Buddy Crew execution completed successfully.")
+            return {"resume_pdf_path": resume_pdf_path, "interview_pdf_path": interview_pdf_path}
 
         except Exception as e:
-            logger.error(f"An error occurred during crew execution: {e}")
-            raise Exception(f"Crew execution failed: {e}")
+            logger.error(f"🚨 Crew execution failed: {e}")
+            logger.debug(traceback.format_exc())
+            raise
 
 
 # Example usage
 if __name__ == "__main__":
     try:
-        # Initialize the crew
         hr_buddy_crew = HRBuddyCrew()
 
-        # Run the crew with sample inputs
         results = hr_buddy_crew.run_crew(
             job_url="https://example.com/job-posting",
             linkedin_url="https://linkedin.com/in/username",
@@ -121,7 +120,6 @@ if __name__ == "__main__":
             missing_info={"skills": "Python, Machine Learning", "education": "BSc in Computer Science"},
         )
 
-        # Display the results
         print("Resume PDF Path:", results["resume_pdf_path"])
         print("Interview Questions PDF Path:", results["interview_pdf_path"])
 
