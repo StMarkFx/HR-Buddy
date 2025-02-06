@@ -1,112 +1,95 @@
-import streamlit as st
-from datetime import datetime
 import os
-import tempfile
-import requests
-from crew import HRBuddyCrew  # Ensure this is properly implemented
-from resume_parser import parse_resume  # Implement resume parsing logic
-from validators import validate_url  # Helper function to validate URLs
-from social_profiler import fetch_social_data  # Extract LinkedIn & GitHub details
+import streamlit as st
+from utils.resume_generator import ResumeGeneratorTool
 
-# Initialize HRBuddy Crew
-hr_buddy_crew = HRBuddyCrew()
+# Initialize Resume Generator
+resume_tool = ResumeGeneratorTool()
 
-# Streamlit App
 def main():
-    st.title("HR Buddy: AI-Powered HR Assistant")
-    st.write("An intelligent tool to generate tailored resumes & interview questions.")
+    st.set_page_config(page_title="ATS Resume Generator", layout="centered")
+    st.title("📄 AI-Powered ATS Resume Generator")
+    st.write("Generate a customized, ATS-optimized resume tailored to a job description.")
 
-    # Job Posting Input
-    job_url = st.text_input("Enter Job Posting URL")
+    # User Inputs
+    st.header("📝 Personal Information")
+    name = st.text_input("Full Name")
+    email = st.text_input("Email")
+    phone = st.text_input("Phone Number")
+    linkedin = st.text_input("LinkedIn URL")
+    github = st.text_input("GitHub URL (Optional)")
+    summary = st.text_area("Professional Summary", "Experienced professional with expertise in...")
     
-    # Validate Job URL
-    if job_url and not validate_url(job_url):
-        st.error("Invalid job URL. Please enter a valid link.")
-        return
-
-    # Social Media Integration
-    linkedin_url = st.text_input("Enter LinkedIn Profile URL (Optional)")
-    github_url = st.text_input("Enter GitHub Profile URL (Optional)")
-
-    # Resume Upload
-    resume_file = st.file_uploader("Upload Your Resume (PDF or DOCX)", type=["pdf", "docx"])
-    resume_data = {}
-
-    # Resume Parsing & Dynamic Input Handling
-    if resume_file:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(resume_file.name)[1]) as temp_file:
-            temp_file.write(resume_file.read())
-            temp_file_path = temp_file.name
-
-        resume_data = parse_resume(temp_file_path)  # Extract structured resume data
-        os.remove(temp_file_path)  # Clean up temp file
-
-    # Handle Missing Resume Information
-    missing_info = {
-        "skills": resume_data.get("skills", ""),
-        "work_experience": resume_data.get("work_experience", []),
-        "education": resume_data.get("education", "")
-    }
-
-    st.subheader("Complete Your Profile")
-
     # Skills
-    missing_info["skills"] = st.text_input("Skills (comma-separated):", missing_info["skills"])
-
+    skills = st.text_area("Skills (comma-separated)", "Python, Data Science, Machine Learning")
+    skills_list = [skill.strip() for skill in skills.split(",")]
+    
     # Work Experience
-    num_experiences = max(len(missing_info["work_experience"]), st.number_input("Number of work experiences:", min_value=0, value=0))
-    work_experience_list = []
+    st.header("💼 Work Experience")
+    work_experience = []
+    num_experiences = st.number_input("How many jobs do you want to add?", min_value=0, max_value=5, step=1)
     for i in range(num_experiences):
-        st.write(f"### Experience {i+1}")
-        work_experience_list.append({
-            "title": st.text_input(f"Title:", key=f"exp_title_{i}"),
-            "company": st.text_input(f"Company:", key=f"exp_company_{i}"),
-            "start_date": st.date_input(f"Start Date:", key=f"exp_start_{i}"),
-            "end_date": st.date_input(f"End Date:", key=f"exp_end_{i}"),
-            "description": st.text_area(f"Description:", key=f"exp_desc_{i}")
-        })
-    missing_info["work_experience"] = work_experience_list
-
+        with st.expander(f"Job {i+1}"):
+            title = st.text_input(f"Job Title {i+1}")
+            company = st.text_input(f"Company {i+1}")
+            start_date = st.text_input(f"Start Date {i+1}")
+            end_date = st.text_input(f"End Date {i+1}")
+            description = st.text_area(f"Job Description {i+1}")
+            work_experience.append({
+                "title": title, "company": company, "start_date": start_date,
+                "end_date": end_date, "description": description
+            })
+    
     # Education
-    missing_info["education"] = st.text_input("Education:", missing_info["education"])
-
-    # Generate Button
-    if st.button("Generate Resume & Prepare Interview"):
-        if not job_url:
-            st.error("Please enter a job posting URL.")
+    st.header("🎓 Education")
+    education = []
+    num_education = st.number_input("How many degrees do you want to add?", min_value=0, max_value=3, step=1)
+    for i in range(num_education):
+        with st.expander(f"Degree {i+1}"):
+            degree = st.text_input(f"Degree {i+1}")
+            field = st.text_input(f"Field of Study {i+1}")
+            institution = st.text_input(f"Institution {i+1}")
+            year = st.text_input(f"Graduation Year {i+1}")
+            education.append({"degree": degree, "field": field, "institution": institution, "year": year})
+    
+    # Certifications
+    st.header("🏅 Certifications")
+    certifications = st.text_area("List your certifications (comma-separated)")
+    certifications_list = [cert.strip() for cert in certifications.split(",")] 
+    
+    # Job Description Upload
+    st.header("📄 Upload Job Description (Optional)")
+    job_description = ""
+    uploaded_file = st.file_uploader("Upload a job description text file", type=["txt"])
+    if uploaded_file is not None:
+        job_description = uploaded_file.read().decode("utf-8")
+        st.text_area("Job Description Content", job_description, height=150)
+    
+    # Generate Resume
+    if st.button("Generate Resume"):
+        user_data = {
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "linkedin": linkedin,
+            "github": github,
+            "summary": summary,
+            "skills": skills_list,
+            "work_experience": work_experience,
+            "education": education,
+            "certifications": certifications_list,
+        }
+        output_file = "generated_resume.pdf"
+        file_path = resume_tool._run(user_data, job_description, output_file)
+        
+        if os.path.exists(file_path):
+            st.success("🎉 Resume generated successfully!")
+            with open(file_path, "rb") as pdf_file:
+                st.download_button(
+                    label="📥 Download Resume", data=pdf_file,
+                    file_name=output_file, mime="application/pdf"
+                )
         else:
-            with st.spinner("Processing..."):
-                try:
-                    # Fetch Job Details
-                    job_data = hr_buddy_crew.extract_job_details(job_url)
-
-                    # Fetch Social Profile Data
-                    social_profile = fetch_social_data(linkedin_url, github_url)
-
-                    # Generate Tailored Resume
-                    tailored_resume = hr_buddy_crew.generate_resume(job_data, social_profile, missing_info)
-
-                    # Prepare Interview Questions
-                    interview_questions = hr_buddy_crew.prepare_interview_questions(job_data, tailored_resume)
-
-                    # Save Outputs
-                    resume_pdf_path = hr_buddy_crew.save_resume_as_pdf(tailored_resume)
-                    interview_pdf_path = hr_buddy_crew.save_interview_as_pdf(interview_questions)
-
-                    # Display Success Message
-                    st.success("Resume and interview questions generated successfully!")
-
-                    # Download Buttons
-                    st.write("### Download Your Tailored Resume")
-                    with open(resume_pdf_path, "rb") as file:
-                        st.download_button("Download Resume", file, "tailored_resume.pdf", "application/pdf")
-
-                    st.write("### Download Interview Questions")
-                    with open(interview_pdf_path, "rb") as file:
-                        st.download_button("Download Questions", file, "interview_questions.pdf", "application/pdf")
-
-                except Exception as e:
-                    st.error(f"An error occurred: {e}")
-
+            st.error("Something went wrong while generating the resume.")
+    
 if __name__ == "__main__":
     main()
