@@ -1,0 +1,82 @@
+# HR Buddy Task Configuration
+
+tasks:
+  - name: "Validate Job URL"
+    agent: "url_validator"
+    input: 
+      - "job_url"
+    output: 
+      - "validated_job_url"
+    next: ["Extract Job Details"]
+
+  - name: "Extract Job Details"
+    agent: "researcher"
+    input: 
+      - "validated_job_url"
+    output: 
+      - "job_data"
+    next: ["Extract Resume Data"]
+
+  - name: "Extract Resume Data"
+    agent: "resume_parser"
+    input: 
+      - "uploaded_resume"
+    output: 
+      - "resume_data"
+    next: ["Find Social Profiles"]
+
+  - name: "Find Social Profiles"
+    agent: "social_media_profiler"
+    input: 
+      - "name"
+      - "role"
+    output: 
+      - "social_profile"
+    next: ["Generate Resume"]
+    error_handling:
+      fallback_action: "use_resume_only"  # Proceed without social profile if missing
+
+  - name: "Generate Resume"
+    agent: "resume_strategist"
+    input: 
+      - "job_data"
+      - "social_profile"
+      - "resume_data"
+    output: 
+      - "generated_resume"
+    next: ["Format Resume"]
+
+  - name: "Format Resume"
+    agent: "resume_formatter"
+    input: 
+      - "generated_resume"
+    output: 
+      - "formatted_resume"
+    next: ["Prepare Interview Questions"]
+
+  - name: "Prepare Interview Questions"
+    agent: "interview_preparer"
+    input: 
+      - "job_data"
+      - "formatted_resume"
+    output: 
+      - "interview_questions"
+    next: ["Final Review"]
+
+  - name: "Final Review"
+    agent: "reviewer"
+    input: 
+      - "formatted_resume"
+      - "interview_questions"
+    output: 
+      - "finalized_resume"
+      - "finalized_questions"
+    next: []
+
+# Task Execution Settings
+execution:
+  retry_on_failure: true
+  max_retries: 3
+  logging:
+    level: "INFO"
+    file_path: "logs/hr_buddy_tasks.log"
