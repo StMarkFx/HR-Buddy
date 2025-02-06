@@ -7,9 +7,9 @@ agents:
       - name: "web_scraper"
         type: "custom"
         config:
-          url_template: "{job_url}"
-          timeout: 10
-          retries: 3
+          url_template: "{job_url}"  # Template for dynamically inserting the job URL
+          timeout: 10  # Timeout in seconds for the web scraper
+          retries: 3   # Number of retries if scraping fails
     communication:
       output_format: "dictionary"
       output_fields:
@@ -25,14 +25,27 @@ agents:
 
   social_media_profiler:
     role: "Social Media Profiler"
-    goal: "Gather and structure information from social media profiles (LinkedIn, GitHub, etc.)."
+    goal: "Find and extract structured information from social media profiles (LinkedIn, GitHub, etc.) using SerpAPI and scraping."
     tools:
-      - name: "social_media_scraper"
+      - name: "serpapi_scraper"
         type: "custom"
         config:
-          api_endpoint: "https://api.socialmedia.com/v1/profile"
-          api_key: "${SOCIAL_MEDIA_API_KEY}"  # Use environment variable for security
+          api_endpoint: "https://serpapi.com/search"
+          api_key: "YOUR_SERPAPI_KEY"  # Replace with actual API key
+          search_template: "site:linkedin.com/in/ {name} {role}"
+          search_template_github: "site:github.com {username}"
           rate_limit: 100
+      - name: "linkedin_scraper"
+        type: "custom"
+        config:
+          method: "selenium"
+          login_required: true
+          fields_to_extract:
+            - "work_experience"
+            - "skills"
+            - "education"
+            - "contact_info"
+            - "projects" 
     communication:
       output_format: "dictionary"
       output_fields:
@@ -47,13 +60,13 @@ agents:
 
   resume_strategist:
     role: "Resume Strategist"
-    goal: "Generate a tailored resume based on the job posting data, social media profile data, and parsed resume data."
+    goal: "Generate a tailored resume based on job posting data, social media profile data, and parsed resume data."
     tools:
-      - name: "llm"
-        type: "ollama"
+      - name: "deepseek_r1"
+        type: "local_llm"
         config:
-          api_endpoint: "http://localhost:11434/api/generate"
-          model_name: "deepseek"  # Updated for DeepSeek R1 1.5B
+          model: "deepseek-r1-1.5b"
+          runtime: "ollama"
           temperature: 0.7
           max_tokens: 1000
       - name: "resume_generator"
@@ -61,6 +74,13 @@ agents:
         config:
           template_path: "templates/resume_template.docx"
           output_format: "pdf"
+          fields_to_replace:
+            - "name"
+            - "contact_info"
+            - "work_experience"
+            - "education"
+            - "skills"
+            - "projects"
     communication:
       input_format: "dictionary"
       input_fields:
@@ -68,20 +88,19 @@ agents:
         - "social_profile"
         - "resume_data"
       output_format: "file"
-      output_file_type: "pdf"
       error_handling:
         retry_on_failure: true
         fallback_action: "log_and_continue"
 
   interview_preparer:
     role: "Interview Preparer"
-    goal: "Generate a list of targeted interview questions based on the job description and the candidate's resume."
+    goal: "Generate a list of targeted interview questions based on the job description and candidate's resume."
     tools:
-      - name: "llm"
-        type: "ollama"
+      - name: "deepseek_r1"
+        type: "local_llm"
         config:
-          api_endpoint: "http://localhost:11434/api/generate"
-          model_name: "deepseek"  # Updated for DeepSeek R1 1.5B
+          model: "deepseek-r1-1.5b"
+          runtime: "ollama"
           temperature: 0.5
           max_tokens: 500
     communication:
@@ -90,7 +109,6 @@ agents:
         - "job_data"
         - "resume_data"
       output_format: "file"
-      output_file_type: "pdf"
       error_handling:
         retry_on_failure: true
         fallback_action: "log_and_continue"
@@ -100,7 +118,6 @@ global_config:
   logging:
     level: "INFO"
     file_path: "logs/hr_buddy.log"
-    rotation: "10MB"
   error_handling:
     max_retries: 3
     retry_delay: 5
