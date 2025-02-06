@@ -1,16 +1,17 @@
-streamlit==1.32.0
-crewai==0.1.0
-reportlab==4.0.4
-beautifulsoup4==4.12.2
-pyresparser==1.0.3
-openai==0.28.0
-python-dotenv==1.0.0
-jinja2==3.1.2
-requests==2.31.0
-nltk==3.8.1
-spacy==3.7.2
+streamlit
+crewai
+reportlab
+beautifulsoup4
+pyresparser=
+openai
+python-dotenv
+jinja2
+requests
+nltk
+spacy
 ollama
 bs4
+docx
 
 # Add your vector database library here (e.g., faiss-cpu, chromadb)
 # Add any other necessary libraries
