@@ -8,6 +8,7 @@ class InterviewPreparerAgent:
         self.agent = Agent(
             role="Interview Preparer",
             goal="Generate a list of targeted interview questions based on job description and resume.",
+            backstory=" ",
             tools=["nlp", "question_generation"],
             verbose=True
         )

@@ -1,5 +1,5 @@
 from crewai import Agent
-from hr_buddy.utils.resume_generator import ResumeGeneratorTool
+from utils.resume_generator import ResumeGeneratorTool
 import subprocess
 import json
 
