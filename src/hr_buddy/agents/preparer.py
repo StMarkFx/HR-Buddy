@@ -1,74 +1,26 @@
 from crewai import Agent
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import inch  # Import inch from reportlab.lib.units
-from reportlab.pdfgen import canvas
+from crewai_tools import RagTool, PDFSearchTool, DOCXSearchTool
 
 class InterviewPreparerAgent:
     def __init__(self):
+        self.rag_tool = RagTool()
         self.agent = Agent(
             role="Interview Preparer",
-            goal="Generate a list of targeted interview questions based on job description and resume.",
-            backstory=" ",
-            tools=["nlp", "question_generation"],
+            goal=(
+                "Generate tailored interview questions based on job descriptions, industry trends, and candidate backgrounds. "
+                "Ensure that questions are challenging yet relevant to the role."
+            ),
+            backstory=(
+                "You are an expert interview coach with extensive experience in HR and talent acquisition. "
+                "You analyze job descriptions and candidate profiles to create highly targeted interview questions."
+            ),
+            tools=[self.rag_tool],
             verbose=True
         )
-
-    def generate_questions(self, job_details, resume_data):
-        """
-        Generate a list of targeted interview questions based on job description and resume.
-        """
-        try:
-            # Extract keywords from job description and resume skills
-            keywords = set(job_details["requirements"].split() + resume_data["skills"])
-
-            # Generate questions based on keywords
-            questions = [
-                f"Can you explain your experience with {keyword}?"
-                for keyword in keywords
-            ]
-
-            return questions
-        except Exception as e:
-            raise Exception(f"Failed to generate interview questions: {e}")
-
-    def generate_questions_pdf(self, questions, filename="interview_questions.pdf"):
-        """
-        Generate a PDF file for the interview questions.
-        """
-        try:
-            # Create a PDF canvas
-            c = canvas.Canvas(filename, pagesize=letter)
-
-            # Start writing text at the top of the page
-            y_position = 10 * inch  # Start 10 inches from the bottom (top of the page)
-
-            # Add a title
-            c.drawString(1 * inch, y_position, "Interview Questions:")
-            y_position -= 0.5 * inch  # Move down by 0.5 inches
-
-            # Add each question to the PDF
-            for question in questions:
-                if y_position <= 1 * inch:  # If we're near the bottom of the page, start a new page
-                    c.showPage()
-                    y_position = 10 * inch  # Reset y_position for the new page
-                c.drawString(1 * inch, y_position, question)
-                y_position -= 0.25 * inch  # Move down by 0.25 inches after each question
-
-            # Save the PDF
-            c.save()
-            return filename
-        except Exception as e:
-            raise Exception(f"Failed to generate interview questions PDF: {e}")
-
-# Example usage
-if __name__ == "__main__":
-    preparer = InterviewPreparerAgent()
-    job_details = {"requirements": "Python, Machine Learning, Data Analysis"}
-    resume_data = {"skills": ["Python", "Data Analysis"]}
     
-    try:
-        questions = preparer.generate_questions(job_details, resume_data)
-        pdf_path = preparer.generate_questions_pdf(questions)
-        print(f"Interview questions PDF generated at: {pdf_path}")
-    except Exception as e:
-        print(f"Error: {e}")
+    def generate_questions(self, job_details):
+        return [
+            "Tell me about yourself.",
+            "What are your strengths?",
+            "Why should we hire you for this role?"
+        ]
