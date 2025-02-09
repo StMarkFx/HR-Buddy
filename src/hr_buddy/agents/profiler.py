@@ -3,11 +3,10 @@ from crewai_tools import GithubSearchTool
 from crewai_tools.tools.website_search.website_search_tool import WebsiteSearchTool
 from embedchain.embedder.ollama import OllamaEmbedder
 
-
 class SocialMediaProfilerAgent:
     def __init__(self):
-        self.linkedin_tool = WebsiteSearchTool(embedding_model=OllamaEmbedder(model_name="deepseek-r1:1.5b"))
-        self.github_tool = GithubSearchTool()
+        self.linkedin_tool = WebsiteSearchTool(embedding_model=OllamaEmbedder())
+
         self.agent = Agent(
             role="Social Media Profiler",
             goal=(
