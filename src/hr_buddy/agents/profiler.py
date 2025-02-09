@@ -1,5 +1,8 @@
 from crewai import Agent
-from crewai_tools import WebsiteSearchTool, GithubSearchTool
+from crewai_tools import GithubSearchTool
+from crewai_tools.tools.website_search.website_search_tool import WebsiteSearchTool
+from embedchain.embedder.ollama import OllamaEmbedder
+
 
 class SocialMediaProfilerAgent:
     def __init__(self):
