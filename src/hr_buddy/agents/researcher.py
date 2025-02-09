@@ -1,28 +1,23 @@
 from crewai import Agent
-from crewai_tools import WebsiteSearchTool, GithubSearchTool
+from crewai_tools import ScrapeWebsiteTool
 
-class SocialMediaProfilerAgent:
+class ResearcherAgent:
     def __init__(self):
-        self.linkedin_tool = WebsiteSearchTool()
-        self.github_tool = GithubSearchTool()
+        self.tool = ScrapeWebsiteTool()
         self.agent = Agent(
-            role="Social Media Profiler",
+            role="Job Researcher",
             goal=(
-                "Analyze LinkedIn and GitHub profiles to extract relevant work experience, skills, and contributions. "
-                "Identify alignment with job requirements based on extracted data."
+                "Extract detailed job requirements, qualifications, and expectations from a given job posting URL. "
+                "Ensure all responsibilities, preferred skills, and necessary experience are captured accurately."
             ),
             backstory=(
-                "You are an expert in professional networking analysis. You analyze LinkedIn profiles to extract "
-                "job history, education, and skills. You also scan GitHub profiles to assess coding contributions and technical proficiency."
+                "You are a highly skilled job researcher with deep expertise in web scraping. "
+                "Your job is to gather critical details from job postings and structure them in a way that helps candidates "
+                "optimize their resumes and prepare for interviews."
             ),
-            tools=[self.linkedin_tool, self.github_tool],
+            tools=[self.tool],
             verbose=True
         )
     
-    def extract_profiles(self, linkedin_url, github_url):
-        data = {}
-        if linkedin_url:
-            data["linkedin"] = self.linkedin_tool.run(linkedin_url)
-        if github_url:
-            data["github"] = self.github_tool.run(github_url)
-        return data
+    def extract_job_details(self, url):
+        return self.tool.run(url)

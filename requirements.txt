@@ -12,6 +12,7 @@ spacy
 ollama
 bs4
 docx
+crewai_tools
 
 # Add your vector database library here (e.g., faiss-cpu, chromadb)
 # Add any other necessary libraries
