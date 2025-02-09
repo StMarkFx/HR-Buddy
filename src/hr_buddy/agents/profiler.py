@@ -6,7 +6,7 @@ from embedchain.embedder.ollama import OllamaEmbedder
 
 class SocialMediaProfilerAgent:
     def __init__(self):
-        self.linkedin_tool = WebsiteSearchTool(embedding_model=OllamaEmbedder(model_name="deepseek"))
+        self.linkedin_tool = WebsiteSearchTool(embedding_model=OllamaEmbedder(model_name="deepseek-r1:1.5b"))
         self.github_tool = GithubSearchTool()
         self.agent = Agent(
             role="Social Media Profiler",
